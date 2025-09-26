@@ -1,17 +1,20 @@
-// tests2.rs
+// lifetimes3.rs
 //
-// This test has a problem with it -- make the test compile! Make the test pass!
-// Make the test fail!
+// Lifetimes are also needed when structs hold references.
 //
-// Execute `rustlings hint tests2` or use the `hint` watch subcommand for a
+// Execute `rustlings hint lifetimes3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn you_can_assert_eq() {
-        assert_eq!();
-    }
+struct Book<'a> {
+    author: &'a str,
+    title: &'a str,
+}
+
+fn main() {
+    let name = String::from("Jill Smith");
+    let title = String::from("Fish Flying");
+    let book = Book { author: &name, title: &title };
+
+    println!("{} by {}", book.title, book.author);
 }

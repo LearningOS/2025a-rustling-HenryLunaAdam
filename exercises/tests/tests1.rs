@@ -1,21 +1,20 @@
-// tests1.rs
+// lifetimes3.rs
 //
-// Tests are important to ensure that your code does what you think it should
-// do. Tests can be run on this file with the following command: rustlings run
-// tests1
+// Lifetimes are also needed when structs hold references.
 //
-// This test has a problem with it -- make the test compile! Make the test pass!
-// Make the test fail!
-//
-// Execute `rustlings hint tests1` or use the `hint` watch subcommand for a
+// Execute `rustlings hint lifetimes3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn you_can_assert() {
-        assert!();
-    }
+struct Book<'a> {
+    author: &'a str,
+    title: &'a str,
+}
+
+fn main() {
+    let name = String::from("Jill Smith");
+    let title = String::from("Fish Flying");
+    let book = Book { author: &name, title: &title };
+
+    println!("{} by {}", book.title, book.author);
 }

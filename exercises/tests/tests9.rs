@@ -1,45 +1,39 @@
-// tests9.rs
-//
-// Rust is highly capable of sharing FFI interfaces with C/C++ and other statically compiled
-// languages, and it can even link within the code itself! It makes it through the extern
-// block, just like the code below.
-//
-// The short string after the `extern` keyword indicates which ABI the externally imported
-// function would follow. In this exercise, "Rust" is used, while other variants exists like
-// "C" for standard C ABI, "stdcall" for the Windows ABI.
-//
-// The externally imported functions are declared in the extern blocks, with a semicolon to
-// mark the end of signature instead of curly braces. Some attributes can be applied to those
-// function declarations to modify the linking behavior, such as #[link_name = ".."] to
-// modify the actual symbol names.
-//
-// If you want to export your symbol to the linking environment, the `extern` keyword can
-// also be marked before a function definition with the same ABI string note. The default ABI
-// for Rust functions is literally "Rust", so if you want to link against pure Rust functions,
-// the whole extern term can be omitted.
-//
-// Rust mangles symbols by default, just like C++ does. To suppress this behavior and make
-// those functions addressable by name, the attribute #[no_mangle] can be applied.
-//
-// In this exercise, your task is to make the testcase able to call the `my_demo_function` in
-// module Foo. the `my_demo_function_alias` is an alias for `my_demo_function`, so the two
-// line of code in the testcase should call the same function.
-//
-// You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
+// When building packages, some dependencies can neither be imported in
+// `Cargo.toml` nor be directly linked; some preprocesses varies from code
+// generation to set-up package-specific configurations.
+//
+// Cargo does not aim to replace other build tools, but it does integrate
+// with them with custom build scripts called `build.rs`. This file is
+// usually placed in the root of the project, while in this case the same
+// directory of this exercise.
+//
+// It can be used to:
+//
+// - Building a bundled C library.
+// - Finding a C library on the host system.
+// - Generating a Rust module from a specification.
+// - Performing any platform-specific configuration needed for the crate.
+//
+// When setting up configurations, we can `println!` in the build script
+// to tell Cargo to follow some instructions. The generic format is:
+//
+//     println!("cargo:{}", your_command_in_string);
+//
+// Please see the official Cargo book about build scripts for more
+// information:
+// https://doc.rust-lang.org/cargo/reference/build-scripts.html
+//
+// In this exercise, we look for an environment variable and expect it to
+// fall in a range. You can look into the testcase to find out the details.
+//
+// You should NOT modify this file. Modify `build.rs` in the same directory
+// to pass this exercise.
+//
+// Execute `rustlings hint tests7` or use the `hint` watch subcommand for a
+// hint.
 
-extern "Rust" {
-    fn my_demo_function(a: u32) -> u32;
-    fn my_demo_function_alias(a: u32) -> u32;
-}
 
-mod Foo {
-    // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
-        a
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -47,15 +41,12 @@ mod tests {
 
     #[test]
     fn test_success() {
-        // The externally imported functions are UNSAFE by default
-        // because of untrusted source of other languages. You may
-        // wrap them in safe Rust APIs to ease the burden of callers.
-        //
-        // SAFETY: We know those functions are aliases of a safe
-        // Rust function.
-        unsafe {
-            my_demo_function(123);
-            my_demo_function_alias(456);
-        }
+        let timestamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let s = std::env::var("TEST_FOO").unwrap();
+        let e: u64 = s.parse().unwrap();
+        assert!(timestamp >= e && timestamp < e + 10);
     }
 }

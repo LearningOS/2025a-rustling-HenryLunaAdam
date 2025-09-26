@@ -1,45 +1,20 @@
-// tests6.rs
+// lifetimes3.rs
 //
-// In this example we take a shallow dive into the Rust standard library's
-// unsafe functions. Fix all the question marks and todos to make the test
-// pass.
+// Lifetimes are also needed when structs hold references.
 //
-// Execute `rustlings hint tests6` or use the `hint` watch subcommand for a
+// Execute `rustlings hint lifetimes3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-struct Foo {
-    a: u128,
-    b: Option<String>,
+struct Book<'a> {
+    author: &'a str,
+    title: &'a str,
 }
 
-/// # Safety
-///
-/// The `ptr` must contain an owned box of `Foo`.
-unsafe fn raw_pointer_to_box(ptr: *mut Foo) -> Box<Foo> {
-    // SAFETY: The `ptr` contains an owned box of `Foo` by contract. We
-    // simply reconstruct the box from that pointer.
-    let mut ret: Box<Foo> = unsafe { ??? };
-    todo!("The rest of the code goes here")
-}
+fn main() {
+    let name = String::from("Jill Smith");
+    let title = String::from("Fish Flying");
+    let book = Book { author: &name, title: &title };
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::time::Instant;
-
-    #[test]
-    fn test_success() {
-        let data = Box::new(Foo { a: 1, b: None });
-
-        let ptr_1 = &data.a as *const u128 as usize;
-        // SAFETY: We pass an owned box of `Foo`.
-        let ret = unsafe { raw_pointer_to_box(Box::into_raw(data)) };
-
-        let ptr_2 = &ret.a as *const u128 as usize;
-
-        assert!(ptr_1 == ptr_2);
-        assert!(ret.b == Some("hello".to_owned()));
-    }
+    println!("{} by {}", book.title, book.author);
 }
